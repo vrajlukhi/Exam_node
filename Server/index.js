@@ -1,0 +1,17 @@
+const express=require("express")
+const cookie=require("cookie-parser")
+const cors=require("cors")
+const connect = require("./config/db")
+const User_route = require("./routes/User.Routes")
+const Pro_Route = require("./routes/Product.Route")
+const app=express()
+app.use(express.urlencoded({extended:true}))
+app.use(express.json())
+app.use(cookie())
+app.use(cors())
+app.use("/user",User_route)
+app.use("/product",Pro_Route)
+app.listen(8090,()=>{
+    console.log("Server 8090");
+    connect()
+})

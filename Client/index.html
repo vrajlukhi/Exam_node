@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .container {
+        max-width: 1140px;
+        margin: auto;
+    }
+
+    header {
+        background-color: black;
+        padding: 18px 15px;
+    }
+
+    header nav ul {
+        display: flex;
+        justify-content: space-evenly;
+    }
+
+    header nav ul li {
+        list-style: none;
+    }
+
+    header nav ul li a {
+        text-decoration: none;
+        color: white;
+        font-size: 25px;
+        font-weight: 700;
+        text-transform: capitalize;
+        transition: all 0.5s;
+    }
+    form{
+        padding: 15px;
+    }
+    header nav ul li a:hover {
+        color: antiquewhite;
+    }
+
+    #products {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+    }
+    #products img{
+        height: 250px;
+    }
+    #products div{
+        padding: 14px;
+        border: 1px solid black;
+        border-radius: 10px;
+        margin: 10px;
+    }
+</style>
+
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="signup.html">Signup</a></li>
+                    <li><a href="login.html">Login</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <form action="" method="post" id="product">
+        <input type="text" id="title" placeholder="title">
+        <input type="url" id="img" placeholder="img">
+        <input type="text" id="desc" placeholder="description">
+        <input type="number" id="price" placeholder="price">
+        <input type="text" id="category" placeholder="category">
+        <input type="submit">
+    </form>
+    <div id="products"></div>
+</body>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    document.getElementById("product").addEventListener("submit", (e) => {
+        e.preventDefault()
+        prodata = {
+            title: document.getElementById("title").value,
+            img: document.getElementById("img").value,
+            desc: document.getElementById("desc").value,
+            price: document.getElementById("price").value,
+            category: document.getElementById("category").value,
+        }
+
+        fetch(`http://localhost:8090/product/addpro`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(prodata)
+        })
+            .then((res) => res.json())
+            .then((data) => console.log(data))
+            .catch((err) => console.log(err))
+        alert("Product Add successfully")
+    })
+
+    
+
+    const payment = async(amount) => {
+        let res = await fetch("http://localhost:8090/product/payment",{
+            method: "POST",
+            headers: {"content-type": "application/json"},
+            body : JSON.stringify({amount : amount})
+        })
+        let order = await res.json()
+        let options = {
+            key :"rzp_test_bLAqvl1z0C0XkX",
+            amount : order.amount
+        }
+        let rpay = new Razorpay(options)
+        rpay.open()
+    }
+      const display = (data) => {
+        data.map((ele) => {
+            let img = document.createElement("img");
+            img.src = ele.img
+            let title = document.createElement("h4");
+            title.innerHTML = ele.title
+            let des = document.createElement("h5");
+            des.innerHTML = ele.des
+            let price = document.createElement("h5");
+            price.innerHTML = ele.price
+            let cate = document.createElement("h5");
+            cate.innerHTML = ele.category
+            let btn1 = document.createElement("button");
+            btn1.innerHTML = "Buy now"
+            btn1.addEventListener("click", () => payment(ele.price))
+
+            let div = document.createElement("div")
+            div.append(img, title, des, price,cate, btn1)
+
+            document.getElementById("products").append(div)
+        })
+    }
+     fetch("http://localhost:8090/product/pro")
+        .then((response) => response.json())
+        .then((data) => {
+            display(data);
+        });
+</script>
+
+</html>

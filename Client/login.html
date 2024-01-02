@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup form</title>  
+</head>
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    form{
+        padding: 15px;
+    }
+    .container{
+        max-width: 1140px;
+        margin: auto;
+    }
+    header{
+        background-color: black;
+        padding: 18px 15px;
+    }
+    header nav ul{
+        display: flex;
+        justify-content: space-evenly;
+    }
+    header nav ul li{
+        list-style: none;
+    }
+    header nav ul li a{
+        text-decoration: none;
+        color: white;
+        font-size: 25px;
+        font-weight: 700;
+        text-transform: capitalize;
+        transition: all 0.5s;
+    }
+    header nav ul li a:hover{
+        color: antiquewhite;
+    }
+</style>
+<body>
+    <header>
+    <div class="container">
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="signup.html">Signup</a></li>
+                <li><a href="login.html">Login</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+    <form action="" method="post" id="login">
+        <input type="email" id="email" placeholder="Enter your email" required>
+        <input type="text" id="password" placeholder="Enter your password" required>
+        <input type="submit" value="login">
+    </form>
+</body>
+<script>
+    document.getElementById("login").addEventListener("submit",(e)=>{
+        e.preventDefault()
+        let user={
+            email:document.getElementById("email").value,
+            password:document.getElementById("password").value
+        }; 
+        fetch(`http://localhost:8090/user/login`,{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify(user)
+        })
+        .then((res) => res.json())
+        .then((data) => document.cookie=`id=${data._id}`)
+        .catch((err) => console.log(err))
+         alert("login Succesfully")
+    })
+</script>
+</html>
